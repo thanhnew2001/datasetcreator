@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Processing App</title>
+    <script>
+        async function handleFormSubmit(event) {
+            event.preventDefault(); // Prevent default form submission behavior
+
+            // Hide previous messages and button
+            document.getElementById('responseMessage').textContent = '';
+            document.getElementById('downloadButtonContainer').innerHTML = '';
+
+            const form = event.target;
+            const formData = new FormData(form);
+
+            try {
+                // Send the form data to the server
+                const response = await fetch('/process', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    document.getElementById('responseMessage').textContent = 
+                        `Error: ${errorData.error || 'An unknown error occurred.'}`;
+                    return;
+                }
+
+                const data = await response.json();
+
+                // Show the download button
+                const downloadButtonContainer = document.getElementById('downloadButtonContainer');
+                const downloadButton = document.createElement('a');
+                downloadButton.href = `/download/${data.zip_file}`;
+                downloadButton.textContent = 'Download ZIP File';
+                downloadButton.className = 'download-btn';
+                downloadButton.style.display = 'inline-block';
+                downloadButton.style.marginTop = '10px';
+                downloadButton.style.padding = '10px 20px';
+                downloadButton.style.backgroundColor = '#4CAF50';
+                downloadButton.style.color = 'white';
+                downloadButton.style.textDecoration = 'none';
+                downloadButton.style.borderRadius = '5px';
+
+                downloadButtonContainer.appendChild(downloadButton);
+                document.getElementById('responseMessage').textContent = 
+                    'Processing complete! Click the button below to download the ZIP file.';
+            } catch (error) {
+                console.error(error);
+                document.getElementById('responseMessage').textContent = 
+                    'An error occurred while processing the file. Please try again.';
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Upload Audio File for Processing</h1>
+    <form id="audioForm" onsubmit="handleFormSubmit(event)">
+        <label for="speaker_name">Speaker Name:</label>
+        <input type="text" id="speaker_name" name="speaker_name" required><br><br>
+        
+        <label for="audio_file">Audio File (WAV):</label>
+        <input type="file" id="audio_file" name="audio_file" accept=".wav" required><br><br>
+        
+        <button type="submit">Upload and Process</button>
+    </form>
+
+    <div id="responseMessage" style="margin-top: 20px; font-weight: bold; color: #333;"></div>
+    <div id="downloadButtonContainer" style="margin-top: 20px;"></div>
+</body>
+</html>

@@ -1,14 +1,15 @@
 from __future__ import unicode_literals
+from flask import Flask, render_template, request, send_file, jsonify
 import os
-import speech_recognition as sr
+import zipfile
+from werkzeug.utils import secure_filename
+
+
 import pandas as pd
 import yt_dlp
 import ffmpeg
-import os
 import speech_recognition as sr
 import pandas as pd
-
-import os
 import subprocess
 import json
 import numpy as np
@@ -154,19 +155,67 @@ def split_audio(input_file, output_dir, min_duration=3, max_duration=5, min_sile
     print("Audio splitting completed.")
 
 
-## MAIN
-#1. download wav
-url = "https://www.youtube.com/shorts/eYnuP4LXO_4"
-speaker_name = "ngocngan"
-audio_input = "ngocngan.wav"
-download_from_url(url, speaker_name)
 
-#2.separate and split:
-separate_audio(audio_input)
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['PROCESSED_FOLDER'] = 'processed'
 
-output_dir = f"dataset_raw/{speaker_name}"
-split_audio(f"separated/htdemucs/{speaker_name}/vocals.wav", output_dir)
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+os.makedirs(app.config['PROCESSED_FOLDER'], exist_ok=True)
 
-# 3. transcribe
-transcribe_audio_files(output_dir, "metadata.csv")
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/process', methods=['POST'])
+def process_audio():
+    if 'audio_file' not in request.files or 'speaker_name' not in request.form:
+        return jsonify({'error': 'Invalid request, missing fields'}), 400
+
+    # Retrieve uploaded file and speaker name
+    audio_file = request.files['audio_file']
+    speaker_name = request.form['speaker_name']
+
+    if audio_file.filename == '':
+        return jsonify({'error': 'No file uploaded'}), 400
+
+    # Save the uploaded file
+    filename = secure_filename(audio_file.filename)
+    input_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    audio_file.save(input_file_path)
+
+    # Process the file
+    try:
+        # Create output directory
+        output_dir = os.path.join(app.config['PROCESSED_FOLDER'], speaker_name)
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Separate and split the audio
+        separate_audio(input_file_path)
+        separated_audio_path = f"separated/htdemucs/{speaker_name}/vocals.wav"
+        split_audio(separated_audio_path, output_dir)
+
+        # Transcribe audio
+        metadata_path = os.path.join(output_dir, 'metadata.csv')
+        transcribe_audio_files(output_dir, metadata_path)
+
+        # Zip the results
+        zip_file_path = os.path.join(app.config['PROCESSED_FOLDER'], f"{speaker_name}_processed.zip")
+        with zipfile.ZipFile(zip_file_path, 'w') as zipf:
+            for root, dirs, files in os.walk(output_dir):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    zipf.write(file_path, os.path.relpath(file_path, output_dir))
+
+        return jsonify({'zip_file': zip_file_path})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/download/<path:filename>', methods=['GET'])
+def download_file(filename):
+    return send_file(filename, as_attachment=True)
+
+if __name__ == '__main__':
+    app.run(debug=True)

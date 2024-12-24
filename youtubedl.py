@@ -20,5 +20,5 @@ def download_from_url(url):
 
 
 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-      url = "https://www.youtube.com/watch?v=eJnZBHxuTwM" #@param {type:"string"}
+      url = "https://www.youtube.com/shorts/eYnuP4LXO_4" #@param {type:"string"}
       download_from_url(url)
