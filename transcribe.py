@@ -135,9 +135,15 @@ def split_audio(input_file, output_dir, min_silence_length=0.6, silence_threshol
 
 ## MAIN
 #1. download wav
-url = "https://www.youtube.com/watch?v=eJnZBHxuTwM"
-speaker_name = "ngocngan"
+    # speaker_name = "test001"
+    # audio_input = "test001.wav"  # Replace with your MP3 path
+    # separate_audio(audio_input)
 
+    # output_dir = f"dataset_raw/{speaker_name}"
+    # split_audio(f"separated/htdemucs/{speaker_name}/vocals.wav", output_dir)
+
+url = "https://www.youtube.com/watch?v=OMmX0tox3UY"
+speaker_name = "ngocngan"
 audio_file = f"{speaker_name}.wav"
 download_from_url(url, audio_file)
 
