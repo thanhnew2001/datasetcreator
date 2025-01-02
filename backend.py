@@ -8,7 +8,7 @@ import shutil
 import json
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from split_and_transcribe import split_audio, transcribe_audio_files  # Import your existing functions
+from split_transcribe import split_audio, transcribe_audio_files  # Import your existing functions
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
