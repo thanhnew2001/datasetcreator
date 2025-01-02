@@ -80,13 +80,29 @@ def process_audio(file_path, file_id):
     transcribe_audio_files(output_dir, os.path.join(output_dir, "metadata.csv"))
     
     # 3. Create a ZIP file
+    # zip_path = os.path.join(output_dir, f"{file_id}.zip")
+    # with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+    #     for foldername, subfolders, filenames in os.walk(output_dir):
+    #         for filename in filenames:
+    #             zipf.write(os.path.join(foldername, filename), os.path.relpath(os.path.join(foldername, filename), output_dir))
+    
+    # print(f"ZIP file created at {zip_path}")
+
+    # 3. Create a ZIP file
     zip_path = os.path.join(output_dir, f"{file_id}.zip")
+
+    # Ensure the ZIP file is not included in its own creation
     with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for foldername, subfolders, filenames in os.walk(output_dir):
             for filename in filenames:
-                zipf.write(os.path.join(foldername, filename), os.path.relpath(os.path.join(foldername, filename), output_dir))
-    
+                # Exclude the ZIP file being created
+                if filename == f"{file_id}.zip":
+                    continue
+                file_path = os.path.join(foldername, filename)
+                zipf.write(file_path, os.path.relpath(file_path, output_dir))
+
     print(f"ZIP file created at {zip_path}")
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
