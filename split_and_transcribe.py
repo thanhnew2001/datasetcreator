@@ -2,13 +2,6 @@ from __future__ import unicode_literals
 import os
 import speech_recognition as sr
 import pandas as pd
-import yt_dlp
-import ffmpeg
-import os
-import speech_recognition as sr
-import pandas as pd
-
-import os
 import subprocess
 import json
 import numpy as np
@@ -155,18 +148,12 @@ def split_audio(input_file, output_dir, min_duration=3, max_duration=5, min_sile
 
 
 ## MAIN
-#1. download wav
-url = "https://www.youtube.com/shorts/eYnuP4LXO_4"
-speaker_name = "ngocngan"
-audio_input = "ngocngan.wav"
-download_from_url(url, speaker_name)
+# speaker_name = "ngocngan"
+# audio_input = "ngocngan.wav"
 
-#2.separate and split:
-separate_audio(audio_input)
+# output_dir = f"dataset_raw/{speaker_name}"
+# split_audio(f"separated/htdemucs/{speaker_name}/vocals.wav", output_dir)
 
-output_dir = f"dataset_raw/{speaker_name}"
-split_audio(f"separated/htdemucs/{speaker_name}/vocals.wav", output_dir)
-
-# 3. transcribe
-transcribe_audio_files(output_dir, "metadata.csv")
+# # 3. transcribe
+# transcribe_audio_files(output_dir, "metadata.csv")
 

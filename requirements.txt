@@ -1,9 +1,8 @@
 Flask
-yt-dlp
 SpeechRecognition
-pandas
-scipy
+yt-dlp
 pydub
-numpy
+scipy
 tqdm
-python-dotenv
+flask-cors
+zipfile36
