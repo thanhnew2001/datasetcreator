@@ -146,14 +146,3 @@ def split_audio(input_file, output_dir, min_duration=3, max_duration=5, min_sile
 
     print("Audio splitting completed.")
 
-
-## MAIN
-# speaker_name = "ngocngan"
-# audio_input = "ngocngan.wav"
-
-# output_dir = f"dataset_raw/{speaker_name}"
-# split_audio(f"separated/htdemucs/{speaker_name}/vocals.wav", output_dir)
-
-# # 3. transcribe
-# transcribe_audio_files(output_dir, "metadata.csv")
-
