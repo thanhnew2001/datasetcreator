@@ -159,14 +159,14 @@ def split_audio(input_file, output_dir, min_duration=3, max_duration=5, min_sile
 url = "https://www.youtube.com/shorts/eYnuP4LXO_4"
 speaker_name = "ngocngan"
 audio_input = "ngocngan.wav"
-download_from_url(url, speaker_name)
+#download_from_url(url, speaker_name)
 
 #2.separate and split:
-separate_audio(audio_input)
+#separate_audio(audio_input)
 
 output_dir = f"dataset_raw/{speaker_name}"
 split_audio(f"separated/htdemucs/{speaker_name}/vocals.wav", output_dir)
 
 # 3. transcribe
-transcribe_audio_files(output_dir, "metadata.csv")
+transcribe_audio_files(output_dir, f"separated/htdemucs/{speaker_name}/metadata.csv")
 
